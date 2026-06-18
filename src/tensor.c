@@ -1,4 +1,5 @@
 #include "tensor.h"
+#include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -84,5 +85,21 @@ int tt_tensor_get_flat(tt_tensor *tensor, size_t index, float *out) {
     return 1;
   }
   *out = tensor->data[index];
+  return 0;
+}
+
+// multidimensional indexing
+int tt_tensor_offset(const tt_tensor *tensor, const size_t *indices, size_t nindices, size_t *out) {
+  if (tensor == NULL || tensor->data == NULL || nindices != tensor->ndim || out == NULL ||
+      indices == NULL) {
+    return 1;
+  }
+  *out = 0;
+  for (size_t i = 0; i < nindices; ++i) { // nindices here = tensor->ndim
+    if (!(indices[i] < tensor->shape[i])) {
+      return 1;
+    }
+    *out += indices[i] * tensor->strides[i];
+  }
   return 0;
 }

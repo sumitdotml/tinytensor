@@ -70,6 +70,19 @@ int main(void) {
     return 1;
   }
 
+  const size_t indices[] = {1, 2, 3};
+  size_t offset = 0;
+  if (tt_tensor_offset(&tensor, indices, 3, &offset) != 0) {
+    fprintf(stderr, "tt_tensor_offset failed\n");
+    tt_tensor_free(&tensor);
+    return 1;
+  }
+
+  if (expect_size("offset", offset, 23) != 0) {
+    tt_tensor_free(&tensor);
+    return 1;
+  }
+
   tt_tensor_free(&tensor);
 
   if (tensor.data != NULL || tensor.ndim != 0 || tensor.numel != 0) {
