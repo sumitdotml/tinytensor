@@ -51,6 +51,25 @@ int main(void) {
     }
   }
 
+  if (tt_tensor_set_flat(&tensor, 5, 42.0f) != 0) {
+    fprintf(stderr, "tt_tensor_set_flat failed\n");
+    tt_tensor_free(&tensor);
+    return 1;
+  }
+
+  float value = 0.0f;
+  if (tt_tensor_get_flat(&tensor, 5, &value) != 0) {
+    fprintf(stderr, "tt_tensor_get_flat failed\n");
+    tt_tensor_free(&tensor);
+    return 1;
+  }
+
+  if (value != 42.0f) {
+    fprintf(stderr, "flat value: expected 42.000000, got %f\n", value);
+    tt_tensor_free(&tensor);
+    return 1;
+  }
+
   tt_tensor_free(&tensor);
 
   if (tensor.data != NULL || tensor.ndim != 0 || tensor.numel != 0) {

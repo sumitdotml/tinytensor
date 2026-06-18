@@ -69,3 +69,20 @@ int tt_tensor_fill(tt_tensor *tensor, float value) {
   }
   return 0;
 }
+
+// naive flat element access
+int tt_tensor_set_flat(tt_tensor *tensor, size_t index, float value) {
+  if (tensor == NULL || tensor->data == NULL || index >= tensor->numel) {
+    return 1;
+  }
+  tensor->data[index] = value;
+  return 0;
+}
+
+int tt_tensor_get_flat(tt_tensor *tensor, size_t index, float *out) {
+  if (tensor == NULL || tensor->data == NULL || index >= tensor->numel || out == NULL) {
+    return 1;
+  }
+  *out = tensor->data[index];
+  return 0;
+}
