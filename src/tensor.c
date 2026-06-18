@@ -58,3 +58,14 @@ void tt_tensor_free(tt_tensor *tensor) {
   free(tensor->data);
   tt_tensor_reset(tensor);
 }
+
+// for now, just a tensor filler without strides or shape math
+int tt_tensor_fill(tt_tensor *tensor, float value) {
+  if (tensor == NULL || tensor->data == NULL) {
+    return 1;
+  }
+  for (size_t ele = 0; ele < tensor->numel; ++ele) {
+    tensor->data[ele] = value;
+  }
+  return 0;
+}

@@ -15,5 +15,6 @@ typedef struct tt_tensor {
 
 int tt_tensor_create(tt_tensor *tensor, size_t ndim, const size_t *shape);
 void tt_tensor_free(tt_tensor *tensor);
+int tt_tensor_fill(tt_tensor *tensor, float value);
 
 #endif

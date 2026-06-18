@@ -37,6 +37,20 @@ int main(void) {
     return 1;
   }
 
+  if (tt_tensor_fill(&tensor, 3.5f) != 0) {
+    fprintf(stderr, "tt_tensor_fill failed\n");
+    tt_tensor_free(&tensor);
+    return 1;
+  }
+
+  for (size_t i = 0; i < tensor.numel; ++i) {
+    if (tensor.data[i] != 3.5f) {
+      fprintf(stderr, "data[%zu]: expected 3.500000, got %f\n", i, tensor.data[i]);
+      tt_tensor_free(&tensor);
+      return 1;
+    }
+  }
+
   tt_tensor_free(&tensor);
 
   if (tensor.data != NULL || tensor.ndim != 0 || tensor.numel != 0) {
