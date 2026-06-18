@@ -37,6 +37,8 @@ int main(void) {
     return 1;
   }
 
+  printf("created tensor: shape=[2, 3, 4], strides=[12, 4, 1], numel=24\n");
+
   if (tt_tensor_fill(&tensor, 3.5f) != 0) {
     fprintf(stderr, "tt_tensor_fill failed\n");
     tt_tensor_free(&tensor);
@@ -50,6 +52,8 @@ int main(void) {
       return 1;
     }
   }
+
+  printf("fill: all %zu flat values set to 3.500000\n", tensor.numel);
 
   if (tt_tensor_set_flat(&tensor, 5, 42.0f) != 0) {
     fprintf(stderr, "tt_tensor_set_flat failed\n");
@@ -70,6 +74,8 @@ int main(void) {
     return 1;
   }
 
+  printf("flat access: data[5] = %f\n", value);
+
   const size_t indices[] = {1, 2, 3};
   size_t offset = 0;
   if (tt_tensor_offset(&tensor, indices, 3, &offset) != 0) {
@@ -82,6 +88,8 @@ int main(void) {
     tt_tensor_free(&tensor);
     return 1;
   }
+
+  printf("offset: indices=[1, 2, 3] -> flat offset=%zu\n", offset);
 
   tt_tensor_free(&tensor);
 
