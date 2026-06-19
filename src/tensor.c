@@ -88,7 +88,6 @@ int tt_tensor_get_flat(tt_tensor *tensor, size_t index, float *out) {
   return 0;
 }
 
-// multidimensional indexing
 int tt_tensor_offset(const tt_tensor *tensor, const size_t *indices, size_t nindices, size_t *out) {
   if (tensor == NULL || tensor->data == NULL || nindices != tensor->ndim || out == NULL ||
       indices == NULL) {
@@ -101,5 +100,32 @@ int tt_tensor_offset(const tt_tensor *tensor, const size_t *indices, size_t nind
     }
     *out += indices[i] * tensor->strides[i];
   }
+  return 0;
+}
+
+// multidimensional tensor accessor: set
+int tt_tensor_set(tt_tensor *tensor, const size_t *indices, size_t nindices, float value) {
+  if (tensor == NULL || tensor->data == NULL || nindices != tensor->ndim) {
+    return 1;
+  }
+
+  size_t offset;
+  if (tt_tensor_offset(tensor, indices, nindices, &offset) != 0) {
+    return 1;
+  }
+  tensor->data[offset] = value;
+  return 0;
+}
+
+// multidimensional tensor accessor: get
+int tt_tensor_get(const tt_tensor *tensor, const size_t *indices, size_t nindices, float *out) {
+  if (tensor == NULL || tensor->data == NULL || nindices != tensor->ndim || out == NULL) {
+    return 1;
+  }
+  size_t offset;
+  if (tt_tensor_offset(tensor, indices, nindices, &offset) != 0) {
+    return 1;
+  }
+  *out = tensor->data[offset];
   return 0;
 }

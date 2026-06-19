@@ -91,6 +91,28 @@ int main(void) {
 
   printf("offset: indices=[1, 2, 3] -> flat offset=%zu\n", offset);
 
+  if (tt_tensor_set(&tensor, indices, 3, 99.0f) != 0) {
+    fprintf(stderr, "tt_tensor_set failed\n");
+    tt_tensor_free(&tensor);
+    return 1;
+  }
+
+  float multidim_value = 0.0f;
+  if (tt_tensor_get(&tensor, indices, 3, &multidim_value) != 0) {
+    fprintf(stderr, "tt_tensor_get failed\n");
+    tt_tensor_free(&tensor);
+    return 1;
+  }
+
+  if (multidim_value != 99.0f) {
+    fprintf(stderr, "tensor[1,2,3]: expected 99.000000, got %f\n",
+            multidim_value);
+    tt_tensor_free(&tensor);
+    return 1;
+  }
+
+  printf("multidim access: tensor[1,2,3] = %f\n", multidim_value);
+
   tt_tensor_free(&tensor);
 
   if (tensor.data != NULL || tensor.ndim != 0 || tensor.numel != 0) {
