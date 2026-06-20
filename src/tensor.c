@@ -94,7 +94,7 @@ int tt_tensor_offset(const tt_tensor *tensor, const size_t *indices, size_t nind
     return 1;
   }
   *out = 0;
-  for (size_t i = 0; i < nindices; ++i) { // nindices here = tensor->ndim
+  for (size_t i = 0; i < nindices; ++i) {
     if (!(indices[i] < tensor->shape[i])) {
       return 1;
     }
@@ -130,9 +130,10 @@ int tt_tensor_get(const tt_tensor *tensor, const size_t *indices, size_t nindice
   return 0;
 }
 
-int tt_tensor_add(const tt_tensor *a, const tt_tensor *b, tt_tensor *out) {
-  if (a == NULL || a->data == NULL || b == NULL || b->data == NULL || a->numel != b->numel ||
-      a->ndim != b->ndim || out == NULL || out->data == NULL || a->numel != out->numel ||
+static int check_same_shape_binary_op(const tt_tensor *a, const tt_tensor *b,
+                                      const tt_tensor *out) {
+  if (a == NULL || b == NULL || out == NULL || a->data == NULL || b->data == NULL ||
+      out->data == NULL || a->numel != b->numel || a->numel != out->numel || a->ndim != b->ndim ||
       a->ndim != out->ndim) {
     return 1;
   }
@@ -142,6 +143,15 @@ int tt_tensor_add(const tt_tensor *a, const tt_tensor *b, tt_tensor *out) {
       return 1;
     }
   }
+
+  return 0;
+}
+
+int tt_tensor_add(const tt_tensor *a, const tt_tensor *b, tt_tensor *out) {
+  if (check_same_shape_binary_op(a, b, out) != 0) {
+    return 1;
+  }
+
   for (size_t ele = 0; ele < out->numel; ++ele) {
     out->data[ele] = a->data[ele] + b->data[ele];
   }
@@ -149,23 +159,16 @@ int tt_tensor_add(const tt_tensor *a, const tt_tensor *b, tt_tensor *out) {
 }
 
 int tt_tensor_mul(const tt_tensor *a, const tt_tensor *b, tt_tensor *out) {
-  if (a == NULL || b == NULL || out == NULL || a->data == NULL || b->data == NULL ||
-      out->data == NULL || a->numel != b->numel || a->numel != out->numel || a->ndim != b->ndim ||
-      a->ndim != out->ndim) {
+  if (check_same_shape_binary_op(a, b, out) != 0) {
     return 1;
   }
-  for (size_t dim = 0; dim < out->ndim; ++dim) {
-    if (a->shape[dim] != b->shape[dim] || a->shape[dim] != out->shape[dim]) {
-      return 1;
-    }
-  }
+
   for (size_t ele = 0; ele < out->numel; ++ele) {
     out->data[ele] = a->data[ele] * b->data[ele];
   }
   return 0;
 }
 
-// sum over all the elements within the tensor
 int tt_tensor_sum(const tt_tensor *tensor, float *out) {
   if (tensor == NULL || tensor->data == NULL || out == NULL) {
     return 1;
