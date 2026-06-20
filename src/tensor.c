@@ -164,3 +164,16 @@ int tt_tensor_mul(const tt_tensor *a, const tt_tensor *b, tt_tensor *out) {
   }
   return 0;
 }
+
+// sum over all the elements within the tensor
+int tt_tensor_sum(const tt_tensor *tensor, float *out) {
+  if (tensor == NULL || tensor->data == NULL || out == NULL) {
+    return 1;
+  }
+  float sum = 0.0f;
+  for (size_t ele = 0; ele < tensor->numel; ++ele) {
+    sum += tensor->data[ele];
+  }
+  *out = sum;
+  return 0;
+}
