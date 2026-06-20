@@ -242,6 +242,39 @@ int main(void) {
 
   printf("max: [2, 3] tensor with values -5.000000 and -2.000000 -> -2.000000\n");
 
+  /* checking full tensor mean */
+  for (size_t i = 0; i < a.numel; ++i) {
+    if (tt_tensor_set_flat(&a, i, (float)(i + 1)) != 0) {
+      fprintf(stderr, "failed to prepare tensor for mean test\n");
+      tt_tensor_free(&a);
+      tt_tensor_free(&b);
+      tt_tensor_free(&result);
+      tt_tensor_free(&tensor);
+      return 1;
+    }
+  }
+
+  float mean = 0.0f;
+  if (tt_tensor_mean(&a, &mean) != 0) {
+    fprintf(stderr, "tt_tensor_mean failed\n");
+    tt_tensor_free(&a);
+    tt_tensor_free(&b);
+    tt_tensor_free(&result);
+    tt_tensor_free(&tensor);
+    return 1;
+  }
+
+  if (mean != 3.5f) {
+    fprintf(stderr, "mean: expected 3.500000, got %f\n", mean);
+    tt_tensor_free(&a);
+    tt_tensor_free(&b);
+    tt_tensor_free(&result);
+    tt_tensor_free(&tensor);
+    return 1;
+  }
+
+  printf("mean: [2, 3] tensor with values 1..6 -> 3.500000\n");
+
   tt_tensor_free(&a);
   tt_tensor_free(&b);
   tt_tensor_free(&result);

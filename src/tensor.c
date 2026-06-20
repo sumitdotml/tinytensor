@@ -192,3 +192,15 @@ int tt_tensor_max(const tt_tensor *tensor, float *out) {
   *out = element;
   return 0;
 }
+
+int tt_tensor_mean(const tt_tensor *tensor, float *out) {
+  if (tensor == NULL || tensor->data == NULL || out == NULL) {
+    return 1;
+  }
+  float sum = 0.0f;
+  if (tt_tensor_sum(tensor, &sum) != 0) {
+    return 1;
+  }
+  *out = sum / tensor->numel;
+  return 0;
+}
