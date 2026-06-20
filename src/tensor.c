@@ -129,3 +129,21 @@ int tt_tensor_get(const tt_tensor *tensor, const size_t *indices, size_t nindice
   *out = tensor->data[offset];
   return 0;
 }
+
+int tt_tensor_add(const tt_tensor *a, const tt_tensor *b, tt_tensor *out) {
+  if (a == NULL || a->data == NULL || b == NULL || b->data == NULL || a->numel != b->numel ||
+      a->ndim != b->ndim || out == NULL || out->data == NULL || a->numel != out->numel ||
+      a->ndim != out->ndim) {
+    return 1;
+  }
+
+  for (size_t dim = 0; dim < out->ndim; ++dim) {
+    if (a->shape[dim] != b->shape[dim] || a->shape[dim] != out->shape[dim]) {
+      return 1;
+    }
+  }
+  for (size_t ele = 0; ele < out->numel; ++ele) {
+    out->data[ele] = a->data[ele] + b->data[ele];
+  }
+  return 0;
+}

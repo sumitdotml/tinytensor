@@ -21,5 +21,6 @@ int tt_tensor_get_flat(tt_tensor *tensor, size_t index, float *out);
 int tt_tensor_offset(const tt_tensor *tensor, const size_t *indices, size_t nindices, size_t *out);
 int tt_tensor_set(tt_tensor *tensor, const size_t *indices, size_t nindices, float value);
 int tt_tensor_get(const tt_tensor *tensor, const size_t *indices, size_t nindices, float *out);
+int tt_tensor_add(const tt_tensor *a, const tt_tensor *b, tt_tensor *out);
 
 #endif

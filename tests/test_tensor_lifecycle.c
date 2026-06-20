@@ -14,6 +14,7 @@ int main(void) {
   tt_tensor tensor = {0};
   const size_t shape[] = {2, 3, 4};
 
+  /* checking tensor creation and metadata */
   if (tt_tensor_create(&tensor, 3, shape) != 0) {
     fprintf(stderr, "tt_tensor_create failed\n");
     return 1;
@@ -39,6 +40,7 @@ int main(void) {
 
   printf("created tensor: shape=[2, 3, 4], strides=[12, 4, 1], numel=24\n");
 
+  /* checking fill */
   if (tt_tensor_fill(&tensor, 3.5f) != 0) {
     fprintf(stderr, "tt_tensor_fill failed\n");
     tt_tensor_free(&tensor);
@@ -55,6 +57,7 @@ int main(void) {
 
   printf("fill: all %zu flat values set to 3.500000\n", tensor.numel);
 
+  /* checking flat access */
   if (tt_tensor_set_flat(&tensor, 5, 42.0f) != 0) {
     fprintf(stderr, "tt_tensor_set_flat failed\n");
     tt_tensor_free(&tensor);
@@ -76,6 +79,7 @@ int main(void) {
 
   printf("flat access: data[5] = %f\n", value);
 
+  /* checking multidimensional offset */
   const size_t indices[] = {1, 2, 3};
   size_t offset = 0;
   if (tt_tensor_offset(&tensor, indices, 3, &offset) != 0) {
@@ -91,6 +95,7 @@ int main(void) {
 
   printf("offset: indices=[1, 2, 3] -> flat offset=%zu\n", offset);
 
+  /* checking multidimensional access */
   if (tt_tensor_set(&tensor, indices, 3, 99.0f) != 0) {
     fprintf(stderr, "tt_tensor_set failed\n");
     tt_tensor_free(&tensor);
@@ -105,14 +110,57 @@ int main(void) {
   }
 
   if (multidim_value != 99.0f) {
-    fprintf(stderr, "tensor[1,2,3]: expected 99.000000, got %f\n",
-            multidim_value);
+    fprintf(stderr, "tensor[1,2,3]: expected 99.000000, got %f\n", multidim_value);
     tt_tensor_free(&tensor);
     return 1;
   }
 
   printf("multidim access: tensor[1,2,3] = %f\n", multidim_value);
 
+  /* checking elementwise add */
+  tt_tensor a = {0};
+  tt_tensor b = {0};
+  tt_tensor sum = {0};
+  const size_t add_shape[] = {2, 3};
+
+  if (tt_tensor_create(&a, 2, add_shape) != 0 || tt_tensor_create(&b, 2, add_shape) != 0 ||
+      tt_tensor_create(&sum, 2, add_shape) != 0) {
+    fprintf(stderr, "failed to create tensors for add test\n");
+    tt_tensor_free(&a);
+    tt_tensor_free(&b);
+    tt_tensor_free(&sum);
+    tt_tensor_free(&tensor);
+    return 1;
+  }
+
+  if (tt_tensor_fill(&a, 1.5f) != 0 || tt_tensor_fill(&b, 2.0f) != 0 ||
+      tt_tensor_add(&a, &b, &sum) != 0) {
+    fprintf(stderr, "tt_tensor_add failed\n");
+    tt_tensor_free(&a);
+    tt_tensor_free(&b);
+    tt_tensor_free(&sum);
+    tt_tensor_free(&tensor);
+    return 1;
+  }
+
+  for (size_t i = 0; i < sum.numel; ++i) {
+    if (sum.data[i] != 3.5f) {
+      fprintf(stderr, "sum.data[%zu]: expected 3.500000, got %f\n", i, sum.data[i]);
+      tt_tensor_free(&a);
+      tt_tensor_free(&b);
+      tt_tensor_free(&sum);
+      tt_tensor_free(&tensor);
+      return 1;
+    }
+  }
+
+  printf("add: [2, 3] tensors 1.500000 + 2.000000 -> 3.500000\n");
+
+  tt_tensor_free(&a);
+  tt_tensor_free(&b);
+  tt_tensor_free(&sum);
+
+  /* cleanup */
   tt_tensor_free(&tensor);
 
   if (tensor.data != NULL || tensor.ndim != 0 || tensor.numel != 0) {
