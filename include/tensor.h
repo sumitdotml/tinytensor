@@ -24,5 +24,6 @@ int tt_tensor_get(const tt_tensor *tensor, const size_t *indices, size_t nindice
 int tt_tensor_add(const tt_tensor *a, const tt_tensor *b, tt_tensor *out);
 int tt_tensor_mul(const tt_tensor *a, const tt_tensor *b, tt_tensor *out);
 int tt_tensor_sum(const tt_tensor *tensor, float *out);
+int tt_tensor_max(const tt_tensor *tensor, float *out);
 
 #endif

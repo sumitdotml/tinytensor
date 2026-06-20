@@ -177,3 +177,18 @@ int tt_tensor_sum(const tt_tensor *tensor, float *out) {
   *out = sum;
   return 0;
 }
+
+int tt_tensor_max(const tt_tensor *tensor, float *out) {
+  if (tensor == NULL || tensor->data == NULL || out == NULL) {
+    return 1;
+  }
+  float element = tensor->data[0];
+  for (size_t i = 1; i < tensor->numel; ++i) {
+    float current = tensor->data[i];
+    if (current >= element) {
+      element = current;
+    }
+  }
+  *out = element;
+  return 0;
+}

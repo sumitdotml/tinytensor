@@ -211,6 +211,37 @@ int main(void) {
 
   printf("sum: [2, 3] tensor filled with 2.000000 -> 12.000000\n");
 
+  /* checking full tensor max */
+  if (tt_tensor_fill(&a, -5.0f) != 0 || tt_tensor_set_flat(&a, 4, -2.0f) != 0) {
+    fprintf(stderr, "failed to prepare tensor for max test\n");
+    tt_tensor_free(&a);
+    tt_tensor_free(&b);
+    tt_tensor_free(&result);
+    tt_tensor_free(&tensor);
+    return 1;
+  }
+
+  float max_value = 0.0f;
+  if (tt_tensor_max(&a, &max_value) != 0) {
+    fprintf(stderr, "tt_tensor_max failed\n");
+    tt_tensor_free(&a);
+    tt_tensor_free(&b);
+    tt_tensor_free(&result);
+    tt_tensor_free(&tensor);
+    return 1;
+  }
+
+  if (max_value != -2.0f) {
+    fprintf(stderr, "max: expected -2.000000, got %f\n", max_value);
+    tt_tensor_free(&a);
+    tt_tensor_free(&b);
+    tt_tensor_free(&result);
+    tt_tensor_free(&tensor);
+    return 1;
+  }
+
+  printf("max: [2, 3] tensor with values -5.000000 and -2.000000 -> -2.000000\n");
+
   tt_tensor_free(&a);
   tt_tensor_free(&b);
   tt_tensor_free(&result);
