@@ -147,3 +147,20 @@ int tt_tensor_add(const tt_tensor *a, const tt_tensor *b, tt_tensor *out) {
   }
   return 0;
 }
+
+int tt_tensor_mul(const tt_tensor *a, const tt_tensor *b, tt_tensor *out) {
+  if (a == NULL || b == NULL || out == NULL || a->data == NULL || b->data == NULL ||
+      out->data == NULL || a->numel != b->numel || a->numel != out->numel || a->ndim != b->ndim ||
+      a->ndim != out->ndim) {
+    return 1;
+  }
+  for (size_t dim = 0; dim < out->ndim; ++dim) {
+    if (a->shape[dim] != b->shape[dim] || a->shape[dim] != out->shape[dim]) {
+      return 1;
+    }
+  }
+  for (size_t ele = 0; ele < out->numel; ++ele) {
+    out->data[ele] = a->data[ele] * b->data[ele];
+  }
+  return 0;
+}
