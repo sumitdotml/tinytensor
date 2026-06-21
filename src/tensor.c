@@ -207,3 +207,28 @@ int tt_tensor_mean(const tt_tensor *tensor, float *out) {
   *out = sum / tensor->numel;
   return 0;
 }
+
+// Matmul for 2D tensors
+int tt_tensor_matmul(const tt_tensor *a, const tt_tensor *b, tt_tensor *out) {
+  if (a == NULL || b == NULL || out == NULL || a->data == NULL || b->data == NULL ||
+      out->data == NULL || a->ndim != 2 || b->ndim != 2 || out->ndim != 2) {
+    return 1;
+  }
+  if (a->shape[1] != b->shape[0] || a->shape[0] != out->shape[0] || b->shape[1] != out->shape[1]) {
+    return 1;
+  }
+  for (size_t row_a = 0; row_a < a->shape[0]; ++row_a) {
+    for (size_t col_b = 0; col_b < b->shape[1]; ++col_b) {
+      float sum = 0.0f;
+      for (size_t k = 0; k < a->shape[1]; ++k) {
+        size_t a_offset = row_a * a->strides[0] + k * a->strides[1];
+        size_t b_offset = k * b->strides[0] + col_b * b->strides[1];
+        sum += a->data[a_offset] * b->data[b_offset];
+      }
+      size_t out_offset = row_a * out->strides[0] + col_b * out->strides[1];
+      out->data[out_offset] = sum;
+    }
+  }
+  return 0;
+}
+

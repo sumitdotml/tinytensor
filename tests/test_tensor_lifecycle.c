@@ -279,6 +279,78 @@ int main(void) {
   tt_tensor_free(&b);
   tt_tensor_free(&result);
 
+  /* checking 2D matrix multiplication */
+  tt_tensor matmul_a = {0};
+  tt_tensor matmul_b = {0};
+  tt_tensor matmul_result = {0};
+  const size_t matmul_a_shape[] = {2, 3};
+  const size_t matmul_b_shape[] = {3, 2};
+  const size_t matmul_result_shape[] = {2, 2};
+
+  if (tt_tensor_create(&matmul_a, 2, matmul_a_shape) != 0 ||
+      tt_tensor_create(&matmul_b, 2, matmul_b_shape) != 0 ||
+      tt_tensor_create(&matmul_result, 2, matmul_result_shape) != 0) {
+    fprintf(stderr, "failed to create tensors for matmul test\n");
+    tt_tensor_free(&matmul_a);
+    tt_tensor_free(&matmul_b);
+    tt_tensor_free(&matmul_result);
+    tt_tensor_free(&tensor);
+    return 1;
+  }
+
+  const float matmul_a_values[] = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f};
+  const float matmul_b_values[] = {7.0f, 8.0f, 9.0f, 10.0f, 11.0f, 12.0f};
+  const float matmul_expected[] = {58.0f, 64.0f, 139.0f, 154.0f};
+
+  for (size_t i = 0; i < matmul_a.numel; ++i) {
+    if (tt_tensor_set_flat(&matmul_a, i, matmul_a_values[i]) != 0) {
+      fprintf(stderr, "failed to prepare left tensor for matmul test\n");
+      tt_tensor_free(&matmul_a);
+      tt_tensor_free(&matmul_b);
+      tt_tensor_free(&matmul_result);
+      tt_tensor_free(&tensor);
+      return 1;
+    }
+  }
+
+  for (size_t i = 0; i < matmul_b.numel; ++i) {
+    if (tt_tensor_set_flat(&matmul_b, i, matmul_b_values[i]) != 0) {
+      fprintf(stderr, "failed to prepare right tensor for matmul test\n");
+      tt_tensor_free(&matmul_a);
+      tt_tensor_free(&matmul_b);
+      tt_tensor_free(&matmul_result);
+      tt_tensor_free(&tensor);
+      return 1;
+    }
+  }
+
+  if (tt_tensor_matmul(&matmul_a, &matmul_b, &matmul_result) != 0) {
+    fprintf(stderr, "tt_tensor_matmul failed\n");
+    tt_tensor_free(&matmul_a);
+    tt_tensor_free(&matmul_b);
+    tt_tensor_free(&matmul_result);
+    tt_tensor_free(&tensor);
+    return 1;
+  }
+
+  for (size_t i = 0; i < matmul_result.numel; ++i) {
+    if (matmul_result.data[i] != matmul_expected[i]) {
+      fprintf(stderr, "matmul_result.data[%zu]: expected %f, got %f\n", i, matmul_expected[i],
+              matmul_result.data[i]);
+      tt_tensor_free(&matmul_a);
+      tt_tensor_free(&matmul_b);
+      tt_tensor_free(&matmul_result);
+      tt_tensor_free(&tensor);
+      return 1;
+    }
+  }
+
+  printf("matmul: [2, 3] @ [3, 2] -> [58, 64, 139, 154]\n");
+
+  tt_tensor_free(&matmul_a);
+  tt_tensor_free(&matmul_b);
+  tt_tensor_free(&matmul_result);
+
   /* cleanup */
   tt_tensor_free(&tensor);
 
