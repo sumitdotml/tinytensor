@@ -1,4 +1,5 @@
 #include "tensor.h"
+#include <math.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -232,3 +233,70 @@ int tt_tensor_matmul(const tt_tensor *a, const tt_tensor *b, tt_tensor *out) {
   return 0;
 }
 
+int tt_tensor_softmax_last_dim(const tt_tensor *tensor, tt_tensor *out) {
+  if (tensor == NULL || out == NULL || tensor->ndim == 0 || out->ndim == 0 ||
+      tensor->data == NULL || out->data == NULL || tensor->ndim != out->ndim ||
+      tensor->numel != out->numel) {
+    return 1;
+  }
+  for (size_t dim = 0; dim < tensor->ndim; ++dim) {
+    if (tensor->shape[dim] != out->shape[dim]) {
+      return 1;
+    }
+  }
+
+  size_t last_dim_len = tensor->shape[tensor->ndim - 1];
+
+  /*
+    Here, groups = total groups with each containing `last_dim_len` elements
+    so for instance, if our tensor is:
+
+    [[[0.8474, 0.5893, 0.5541, 0.3149],
+    [0.4477, 0.3493, 0.8349, 0.4417],
+    [0.4945, 0.7338, 0.7073, 0.5568]],
+
+    [[0.4150, 0.4761, 0.1175, 0.6317],
+    [0.7603, 0.9477, 0.0183, 0.2032],
+    [0.7804, 0.1790, 0.7569, 0.1477]]]
+
+    That means its shape is [2, 3, 4]. Which means:
+    - ndim = 3
+    - last_dim_len = tensor[-1] = tensor[ndim - 1] = 4
+    - numel = 2 * 3 * 4 = 24
+    - groups = numel / last_dim_len = 24 / 4 = 6
+
+    So, each group here would be something like:
+    - group 0 = [0.8474, 0.5893, 0.5541, 0.3149]
+    - group 1 = [0.4477, 0.3493, 0.8349, 0.4417]
+    ... and so on.
+  */
+  size_t groups = tensor->numel / last_dim_len;
+
+  for (size_t g = 0; g < groups; ++g) {
+    size_t offset = g * last_dim_len;
+
+    // max calculation per group
+    float max = tensor->data[offset];
+    for (size_t i = 1; i < last_dim_len; ++i) {
+      float ele = tensor->data[offset + i];
+      if (ele > max) {
+        max = ele;
+      }
+    }
+
+    // exp sum per group
+    float exp_sum = 0;
+    for (size_t i = 0; i < last_dim_len; ++i) {
+      float ele = tensor->data[offset + i];
+      exp_sum += expf(ele - max);
+    }
+
+    // normalize inside each group
+    for (size_t i = 0; i < last_dim_len; ++i) {
+      float ele = tensor->data[offset + i];
+      // for a row, each softmaxed element at index i = exp(value_at_i - max_value) / exp_sum
+      out->data[offset + i] = expf(ele - max) / exp_sum;
+    }
+  }
+  return 0;
+}

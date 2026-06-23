@@ -27,5 +27,6 @@ int tt_tensor_sum(const tt_tensor *tensor, float *out);
 int tt_tensor_max(const tt_tensor *tensor, float *out);
 int tt_tensor_mean(const tt_tensor *tensor, float *out);
 int tt_tensor_matmul(const tt_tensor *a, const tt_tensor *b, tt_tensor *out);
+int tt_tensor_softmax_last_dim(const tt_tensor *tensor, tt_tensor *out);
 
 #endif
