@@ -1,6 +1,10 @@
 #include "tensor.h"
 #include <stdio.h>
 
+/*
+  Basic ops: elementwise add/mul and full-tensor reductions.
+  Shape-specific ops such as matmul and softmax live in their own test files.
+*/
 int main(void) {
   tt_tensor a = {0};
   tt_tensor b = {0};
@@ -9,7 +13,7 @@ int main(void) {
 
   if (tt_tensor_create(&a, 2, shape) != 0 || tt_tensor_create(&b, 2, shape) != 0 ||
       tt_tensor_create(&result, 2, shape) != 0) {
-    fprintf(stderr, "failed to create tensors for ops test\n");
+    fprintf(stderr, "failed to create tensors for basic ops test\n");
     tt_tensor_free(&a);
     tt_tensor_free(&b);
     tt_tensor_free(&result);
@@ -145,6 +149,6 @@ int main(void) {
   tt_tensor_free(&b);
   tt_tensor_free(&result);
 
-  printf("tensor ops test passed\n");
+  printf("tensor basic ops test passed\n");
   return 0;
 }
