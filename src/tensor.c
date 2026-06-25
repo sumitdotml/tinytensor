@@ -300,3 +300,42 @@ int tt_tensor_softmax_last_dim(const tt_tensor *tensor, tt_tensor *out) {
   }
   return 0;
 }
+
+int tt_tensor_rmsnorm_last_dim(const tt_tensor *tensor, const tt_tensor *gamma, tt_tensor *out,
+                               float eps) {
+  if (tensor == NULL || gamma == NULL || out == NULL || tensor->data == NULL ||
+      gamma->data == NULL || out->data == NULL || tensor->ndim == 0 || gamma->ndim == 0 ||
+      out->ndim == 0 || tensor->ndim != out->ndim || tensor->numel != out->numel) {
+    return 1;
+  }
+  for (size_t dim = 0; dim < tensor->ndim; ++dim) {
+    if (tensor->shape[dim] != out->shape[dim]) {
+      return 1;
+    }
+  }
+
+  size_t last_dim_len = tensor->shape[tensor->ndim - 1];
+  if (gamma->ndim != 1 || gamma->shape[0] != last_dim_len) {
+    return 1;
+  }
+  size_t groups = tensor->numel / last_dim_len;
+
+  for (size_t g = 0; g < groups; ++g) {
+    size_t offset = g * last_dim_len;
+    float squared_sum = 0;
+    for (size_t i = 0; i < last_dim_len; ++i) {
+      float ele = tensor->data[offset + i];
+      squared_sum += ele * ele;
+    }
+
+    // rms(given_group)
+    float rms = sqrtf((1.0f / last_dim_len) * squared_sum + eps);
+
+    // rmsnorm written for each element of the group
+    for (size_t i = 0; i < last_dim_len; ++i) {
+      out->data[offset + i] = (tensor->data[offset + i] * gamma->data[i]) / rms;
+    }
+  }
+
+  return 0;
+}
