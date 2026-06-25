@@ -4,7 +4,7 @@ INCLUDES := -Iinclude
 ASAN_FLAGS := -g -O1 -fsanitize=address,undefined -fno-omit-frame-pointer
 RELEASE_FLAGS := -O2
 
-.PHONY: test asan clean
+.PHONY: test asan bench clean
 
 test:
 	$(CC) $(CFLAGS) $(INCLUDES) $(RELEASE_FLAGS) src/tensor.c tests/test_tensor_lifecycle.c -o tensor_lifecycle.out
@@ -33,6 +33,10 @@ asan:
 	./tensor_softmax.out
 	$(CC) $(CFLAGS) $(INCLUDES) $(ASAN_FLAGS) src/tensor.c tests/test_tensor_rmsnorm.c -o tensor_rmsnorm.out
 	./tensor_rmsnorm.out
+
+bench:
+	$(CC) $(CFLAGS) $(INCLUDES) $(RELEASE_FLAGS) src/tensor.c benchmarks/bench_tensor.c -o tensor_bench.out
+	./tensor_bench.out
 
 clean:
 	rm -rf *.out *.o *.dSYM
