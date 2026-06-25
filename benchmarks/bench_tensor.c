@@ -33,6 +33,7 @@ static int bench_matmul(void) {
   const size_t b_shape[] = {256, 256};
   const size_t out_shape[] = {256, 256};
   const size_t runs = 5;
+  const double flops_per_run = 2.0 * (double)a_shape[0] * (double)a_shape[1] * (double)b_shape[1];
   tt_tensor a = {0};
   tt_tensor b = {0};
   tt_tensor out = {0};
@@ -61,11 +62,13 @@ static int bench_matmul(void) {
     }
   }
   double elapsed = now_seconds() - start;
+  double gflops = (flops_per_run * (double)runs) / elapsed / 1000000000.0;
   double sum = checksum(&out);
   bench_sink = sum;
 
-  printf("matmul  [256, 256] @ [256, 256]  runs=%zu  total=%.6fs  avg=%.6fs  checksum=%.6f\n",
-         runs, elapsed, elapsed / runs, sum);
+  printf("matmul  [256, 256] @ [256, 256]  runs=%zu  total=%.6fs  avg=%.6fs  "
+         "GFLOP/s=%.3f  checksum=%.6f\n",
+         runs, elapsed, elapsed / runs, gflops, sum);
   status = 0;
 
 cleanup:
@@ -78,6 +81,7 @@ cleanup:
 static int bench_softmax(void) {
   const size_t shape[] = {512, 1024};
   const size_t runs = 25;
+  const double bytes_per_run = (double)(shape[0] * shape[1]) * sizeof(float) * 4.0;
   tt_tensor input = {0};
   tt_tensor out = {0};
   int status = 1;
@@ -103,11 +107,13 @@ static int bench_softmax(void) {
     }
   }
   double elapsed = now_seconds() - start;
+  double gb_per_second = (bytes_per_run * (double)runs) / elapsed / 1000000000.0;
   double sum = checksum(&out);
   bench_sink = sum;
 
-  printf("softmax [512, 1024] last dim       runs=%zu total=%.6fs  avg=%.6fs  checksum=%.6f\n",
-         runs, elapsed, elapsed / runs, sum);
+  printf("softmax [512, 1024] last dim       runs=%zu total=%.6fs  avg=%.6fs  "
+         "est_GB/s=%.3f  checksum=%.6f\n",
+         runs, elapsed, elapsed / runs, gb_per_second, sum);
   status = 0;
 
 cleanup:
@@ -121,6 +127,7 @@ static int bench_rmsnorm(void) {
   const size_t gamma_shape[] = {1024};
   const size_t runs = 50;
   const float eps = 0.00001f;
+  const double bytes_per_run = (double)(tensor_shape[0] * tensor_shape[1]) * sizeof(float) * 4.0;
   tt_tensor input = {0};
   tt_tensor gamma = {0};
   tt_tensor out = {0};
@@ -150,11 +157,13 @@ static int bench_rmsnorm(void) {
     }
   }
   double elapsed = now_seconds() - start;
+  double gb_per_second = (bytes_per_run * (double)runs) / elapsed / 1000000000.0;
   double sum = checksum(&out);
   bench_sink = sum;
 
-  printf("RMSNorm [512, 1024] last dim       runs=%zu total=%.6fs  avg=%.6fs  checksum=%.6f\n",
-         runs, elapsed, elapsed / runs, sum);
+  printf("RMSNorm [512, 1024] last dim       runs=%zu total=%.6fs  avg=%.6fs  "
+         "est_GB/s=%.3f  checksum=%.6f\n",
+         runs, elapsed, elapsed / runs, gb_per_second, sum);
   status = 0;
 
 cleanup:
