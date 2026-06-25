@@ -17,6 +17,8 @@ test:
 	./tensor_matmul.out
 	$(CC) $(CFLAGS) $(INCLUDES) $(RELEASE_FLAGS) src/tensor.c tests/test_tensor_softmax.c -o tensor_softmax.out
 	./tensor_softmax.out
+	$(CC) $(CFLAGS) $(INCLUDES) $(RELEASE_FLAGS) src/tensor.c tests/test_tensor_rmsnorm.c -o tensor_rmsnorm.out
+	./tensor_rmsnorm.out
 
 asan:
 	$(CC) $(CFLAGS) $(INCLUDES) $(ASAN_FLAGS) src/tensor.c tests/test_tensor_lifecycle.c -o tensor_lifecycle.out
@@ -29,6 +31,8 @@ asan:
 	./tensor_matmul.out
 	$(CC) $(CFLAGS) $(INCLUDES) $(ASAN_FLAGS) src/tensor.c tests/test_tensor_softmax.c -o tensor_softmax.out
 	./tensor_softmax.out
+	$(CC) $(CFLAGS) $(INCLUDES) $(ASAN_FLAGS) src/tensor.c tests/test_tensor_rmsnorm.c -o tensor_rmsnorm.out
+	./tensor_rmsnorm.out
 
 clean:
 	rm -rf *.out *.o *.dSYM
