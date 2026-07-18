@@ -3,6 +3,10 @@
 
 #include <stddef.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define TT_TENSOR_MAX_DIMS 8
 
 typedef struct tt_tensor {
@@ -30,5 +34,9 @@ int tt_tensor_matmul(const tt_tensor *a, const tt_tensor *b, tt_tensor *out);
 int tt_tensor_softmax_last_dim(const tt_tensor *tensor, tt_tensor *out);
 int tt_tensor_rmsnorm_last_dim(const tt_tensor *tensor, const tt_tensor *gamma, tt_tensor *out,
                                float eps);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
