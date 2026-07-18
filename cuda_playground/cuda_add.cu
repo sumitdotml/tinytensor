@@ -1,3 +1,23 @@
+/*
+ * Modal run:
+ * make modal SRC=cuda_playground/cuda_add.cu
+ * image: nvidia/cuda:12.8.1-devel-ubuntu24.04
+ * GPU: NVIDIA RTX PRO 6000 Blackwell Server Edition
+ * compute capability: 12.0
+ *
+ * shape=[256, 256] numel=65536 runs=10 total=0.016575s avg=1657.533100us
+ * first 8 outputs:
+ * out[0] = 100.000000
+ * out[1] = 102.000000
+ * out[2] = 104.000000
+ * out[3] = 106.000000
+ * out[4] = 108.000000
+ * out[5] = 110.000000
+ * out[6] = 112.000000
+ * out[7] = 114.000000
+ * cuda add playground test passed
+ */
+
 #include "cuda_helpers.h"
 
 #include <cuda_runtime.h>
