@@ -1,3 +1,5 @@
+#include "cuda_helpers.h"
+
 #include <cuda_runtime.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -110,13 +112,10 @@ int main(void) {
   tt_tensor a = {0};
   tt_tensor b = {0};
   tt_tensor out = {0};
-  int device = 0;
-  cudaDeviceProp prop;
 
-  if (cudaGetDevice(&device) == cudaSuccess &&
-      cudaGetDeviceProperties(&prop, device) == cudaSuccess) {
-    printf("GPU: %s\n", prop.name);
-    printf("compute capability: %d.%d\n", prop.major, prop.minor);
+  if (tt_cuda_print_device_info() != 0) {
+    fprintf(stderr, "failed to read CUDA device info\n");
+    return 1;
   }
 
   if (tensor_create(&a, rows, cols) != 0 || tensor_create(&b, rows, cols) != 0 ||

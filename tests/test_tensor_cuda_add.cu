@@ -1,3 +1,4 @@
+#include "cuda_helpers.h"
 #include "tensor.h"
 #include "tensor_cuda.h"
 #include <stdio.h>
@@ -7,6 +8,11 @@ int main(void) {
   tt_tensor b = {0};
   tt_tensor result = {0};
   const size_t shape[] = {2, 3};
+
+  if (tt_cuda_print_device_info() != 0) {
+    fprintf(stderr, "failed to read CUDA device info\n");
+    return 1;
+  }
 
   if (tt_tensor_create(&a, 2, shape) != 0 || tt_tensor_create(&b, 2, shape) != 0 ||
       tt_tensor_create(&result, 2, shape) != 0) {

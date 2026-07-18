@@ -7,6 +7,7 @@ ASAN_FLAGS := -g -O1 -fsanitize=address,undefined -fno-omit-frame-pointer
 RELEASE_FLAGS := -O2
 BUILD_DIR := build
 SRC ?= cuda_playground/cuda_add.cu
+CUDA_HELPERS ?= include/cuda_helpers.h
 OUT := $(basename $(notdir $(SRC))).out
 GPU ?= RTX-PRO-6000
 MODAL_IMAGE ?= nvidia/cuda:12.8.1-devel-ubuntu24.04
@@ -54,7 +55,7 @@ cuda-test: | $(BUILD_DIR)
 	./$(BUILD_DIR)/tensor_cuda_add.out
 
 modal:
-	modal shell --gpu $(GPU) --image $(MODAL_IMAGE) --add-local $(SRC) -c 'nvcc $(CUDAFLAGS) /mnt/$(notdir $(SRC)) -o /tmp/$(OUT) && /tmp/$(OUT)'
+	modal shell --gpu $(GPU) --image $(MODAL_IMAGE) --add-local $(SRC) --add-local $(CUDA_HELPERS) -c 'nvcc $(CUDAFLAGS) /mnt/$(notdir $(SRC)) -o /tmp/$(OUT) && /tmp/$(OUT)'
 
 clean:
 	rm -rf $(BUILD_DIR) *.out *.o *.dSYM
