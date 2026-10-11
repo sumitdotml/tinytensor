@@ -12,6 +12,12 @@ Just bootstrapped with a few helpers. Starting off from here :)
 Doing this for mainly learning to write ML internals in C and ultimately CUDA. Will take a
 long time until I become good at distributed ML, but hey gotta start somewhere!
 
+## Source Layout
+
+Shared tensor helpers and CPU operations live in `src/tensor.c` (for now). CUDA operations live in
+`src/cuda/`, each with its host wrapper and private kernel. The public CUDA interface stays in
+`include/tensor_cuda.h`.
+
 ## Running
 
 Local tests and benchmarks save their binaries under the ignored `build/` directory:
