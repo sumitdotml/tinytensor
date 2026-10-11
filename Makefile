@@ -3,6 +3,7 @@ NVCC ?= nvcc
 CFLAGS ?= -std=c11 -Wall -Wextra -Werror
 CUDAFLAGS ?= -std=c++17 -O2
 INCLUDES := -Iinclude
+CUDA_SRC := src/cuda/add.cu src/cuda/matmul.cu
 ASAN_FLAGS := -g -O1 -fsanitize=address,undefined -fno-omit-frame-pointer
 RELEASE_FLAGS := -O2
 BUILD_DIR := build
@@ -51,9 +52,9 @@ bench: | $(BUILD_DIR)
 
 cuda-test: | $(BUILD_DIR)
 	$(CC) $(CFLAGS) $(INCLUDES) $(RELEASE_FLAGS) -c src/tensor.c -o $(BUILD_DIR)/tensor.o
-	$(NVCC) $(CUDAFLAGS) $(INCLUDES) $(BUILD_DIR)/tensor.o src/tensor_cuda.cu tests/test_tensor_cuda_add.cu -o $(BUILD_DIR)/tensor_cuda_add.out
+	$(NVCC) $(CUDAFLAGS) $(INCLUDES) $(BUILD_DIR)/tensor.o $(CUDA_SRC) tests/test_tensor_cuda_add.cu -o $(BUILD_DIR)/tensor_cuda_add.out
 	./$(BUILD_DIR)/tensor_cuda_add.out
-	$(NVCC) $(CUDAFLAGS) $(INCLUDES) $(BUILD_DIR)/tensor.o src/tensor_cuda.cu tests/test_tensor_cuda_matmul.cu -o $(BUILD_DIR)/tensor_cuda_matmul.out
+	$(NVCC) $(CUDAFLAGS) $(INCLUDES) $(BUILD_DIR)/tensor.o $(CUDA_SRC) tests/test_tensor_cuda_matmul.cu -o $(BUILD_DIR)/tensor_cuda_matmul.out
 	./$(BUILD_DIR)/tensor_cuda_matmul.out
 
 modal:
