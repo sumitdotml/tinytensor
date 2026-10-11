@@ -57,10 +57,9 @@ static void tensor_free(tt_tensor *tensor) {
 
 static int same_shape(const tt_tensor *a, const tt_tensor *b, const tt_tensor *out) {
   return a != NULL && b != NULL && out != NULL && a->data != NULL && b->data != NULL &&
-         out->data != NULL && a->ndim == b->ndim && a->ndim == out->ndim &&
-         a->numel == b->numel && a->numel == out->numel && a->shape[0] == b->shape[0] &&
-         a->shape[0] == out->shape[0] && a->shape[1] == b->shape[1] &&
-         a->shape[1] == out->shape[1];
+         out->data != NULL && a->ndim == b->ndim && a->ndim == out->ndim && a->numel == b->numel &&
+         a->numel == out->numel && a->shape[0] == b->shape[0] && a->shape[0] == out->shape[0] &&
+         a->shape[1] == b->shape[1] && a->shape[1] == out->shape[1];
 }
 
 __global__ void tensor_add_kernel(const float *a, const float *b, float *out, size_t numel) {
@@ -112,8 +111,8 @@ static int tensor_add_cuda(const tt_tensor *a, const tt_tensor *b, tt_tensor *ou
   }
   elapsed = now_seconds() - start;
 
-  printf("shape=[%zu, %zu] numel=%zu runs=%zu total=%.6fs avg=%.6fus\n", a->shape[0],
-         a->shape[1], numel, runs, elapsed, (elapsed / (double)runs) * 1000000.0);
+  printf("shape=[%zu, %zu] numel=%zu runs=%zu total=%.6fs avg=%.6fus\n", a->shape[0], a->shape[1],
+         numel, runs, elapsed, (elapsed / (double)runs) * 1000000.0);
 
   status = 0;
 

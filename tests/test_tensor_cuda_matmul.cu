@@ -9,12 +9,10 @@ int main(void) {
   const size_t a_shape[] = {2, 3};
   const size_t b_shape[] = {3, 4};
   const size_t result_shape[] = {2, 4};
-  const float expected[] = {38.0f, 44.0f, 50.0f, 56.0f,
-                            83.0f, 98.0f, 113.0f, 128.0f};
+  const float expected[] = {38.0f, 44.0f, 50.0f, 56.0f, 83.0f, 98.0f, 113.0f, 128.0f};
   int status = 1;
 
-  if (tt_tensor_create(&a, 2, a_shape) != 0 ||
-      tt_tensor_create(&b, 2, b_shape) != 0 ||
+  if (tt_tensor_create(&a, 2, a_shape) != 0 || tt_tensor_create(&b, 2, b_shape) != 0 ||
       tt_tensor_create(&result, 2, result_shape) != 0) {
     fprintf(stderr, "failed to create tensors for CUDA matmul test\n");
     goto cleanup;
@@ -35,8 +33,7 @@ int main(void) {
 
   for (size_t i = 0; i < result.numel; ++i) {
     if (result.data[i] != expected[i]) {
-      fprintf(stderr, "result.data[%zu]: expected %f, got %f\n",
-              i, expected[i], result.data[i]);
+      fprintf(stderr, "result.data[%zu]: expected %f, got %f\n", i, expected[i], result.data[i]);
       goto cleanup;
     }
   }

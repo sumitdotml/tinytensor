@@ -52,8 +52,7 @@ int main(void) {
 
   for (size_t i = 0; i < result.numel; ++i) {
     if (result.data[i] != expected[i]) {
-      fprintf(stderr, "result.data[%zu]: expected %f, got %f\n", i, expected[i],
-              result.data[i]);
+      fprintf(stderr, "result.data[%zu]: expected %f, got %f\n", i, expected[i], result.data[i]);
       tt_tensor_free(&a);
       tt_tensor_free(&b);
       tt_tensor_free(&result);

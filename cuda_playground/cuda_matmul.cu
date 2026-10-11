@@ -26,7 +26,8 @@ typedef struct tt_tensor {
   size_t numel;
 } tt_tensor;
 
-static __global__ void tensor_naive_matmul_kernel(const float *a_d, const float *b_d, float *out_d, size_t num_rows, size_t num_inner,
+static __global__ void tensor_naive_matmul_kernel(const float *a_d, const float *b_d, float *out_d,
+                                                  size_t num_rows, size_t num_inner,
                                                   size_t num_cols) {
   size_t row_index = blockDim.y * blockIdx.y + threadIdx.y;
   size_t col_index = blockDim.x * blockIdx.x + threadIdx.x;
@@ -41,8 +42,9 @@ static __global__ void tensor_naive_matmul_kernel(const float *a_d, const float 
 }
 
 static int tt_tensor_matmul_cuda(const tt_tensor *a, const tt_tensor *b, tt_tensor *out) {
-  if (a == nullptr || b == nullptr || out == nullptr || a->data == nullptr || b->data == nullptr || out->data == nullptr ||
-      a->shape[1] != b->shape[0] || a->shape[0] != out->shape[0] || b->shape[1] != out->shape[1] || a->ndim != 2 || b->ndim != 2 || out->ndim != 2) {
+  if (a == nullptr || b == nullptr || out == nullptr || a->data == nullptr || b->data == nullptr ||
+      out->data == nullptr || a->shape[1] != b->shape[0] || a->shape[0] != out->shape[0] ||
+      b->shape[1] != out->shape[1] || a->ndim != 2 || b->ndim != 2 || out->ndim != 2) {
     return 1;
   }
   size_t num_rows = a->shape[0];
@@ -62,7 +64,8 @@ static int tt_tensor_matmul_cuda(const tt_tensor *a, const tt_tensor *b, tt_tens
   dim3 blockDim(threads_per_width, threads_per_height, 1);
   int status = 1;
 
-  if (cudaMalloc((void **)&a_d, a_bytes) != cudaSuccess || cudaMalloc((void **)&b_d, b_bytes) != cudaSuccess ||
+  if (cudaMalloc((void **)&a_d, a_bytes) != cudaSuccess ||
+      cudaMalloc((void **)&b_d, b_bytes) != cudaSuccess ||
       cudaMalloc((void **)&out_d, out_bytes) != cudaSuccess) {
     goto cleanup;
   }
