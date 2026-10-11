@@ -53,6 +53,8 @@ cuda-test: | $(BUILD_DIR)
 	$(CC) $(CFLAGS) $(INCLUDES) $(RELEASE_FLAGS) -c src/tensor.c -o $(BUILD_DIR)/tensor.o
 	$(NVCC) $(CUDAFLAGS) $(INCLUDES) $(BUILD_DIR)/tensor.o src/tensor_cuda.cu tests/test_tensor_cuda_add.cu -o $(BUILD_DIR)/tensor_cuda_add.out
 	./$(BUILD_DIR)/tensor_cuda_add.out
+	$(NVCC) $(CUDAFLAGS) $(INCLUDES) $(BUILD_DIR)/tensor.o src/tensor_cuda.cu tests/test_tensor_cuda_matmul.cu -o $(BUILD_DIR)/tensor_cuda_matmul.out
+	./$(BUILD_DIR)/tensor_cuda_matmul.out
 
 modal:
 	modal shell --gpu $(GPU) --image $(MODAL_IMAGE) --add-local $(SRC) --add-local $(CUDA_HELPERS) -c 'nvcc $(CUDAFLAGS) /mnt/$(notdir $(SRC)) -o /tmp/$(OUT) && /tmp/$(OUT)'
